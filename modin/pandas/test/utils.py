@@ -63,6 +63,12 @@ test_data = {
         ]
         for i in range(NCOLS)
     },
+    "with_index_column": {
+        "index": [1, 2, 3, 4],
+        "col4": [4, 5, 6, 7],
+        "col1": [8.0, 9.4, 10.1, 11.3],
+        "col2": ["a", "b", "c", "d"],
+    },
     # "int_float_object_data": {
     #     "col3": [1, 2, 3, 4],
     #     "col4": [4, 5, 6, 7],
@@ -155,6 +161,7 @@ numeric_dfs = [
     "float_data",
     "sparse_nan_data",
     "dense_nan_data",
+    "with_index_column",
     "100x100",
 ]
 
