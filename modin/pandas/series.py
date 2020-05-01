@@ -147,12 +147,20 @@ class Series(BasePandasDataset):
     def _prepare_inter_op(self, other):
         if isinstance(other, Series):
             new_self = self.copy()
-            new_self.name = "__reduced__"
             new_other = other.copy()
-            new_other.name = "__reduced__"
+            if self.name == other.name:
+                # Keep name only if it is the same for both operands
+                new_self.name = self.name
+                new_other.name = self.name
+            else:
+                new_self.name = "__reduced__"
+                new_other.name = "__reduced__"
         else:
             new_self = self
             new_other = other
+            if isinstance(other, np.ndarray):
+                # np.ndarray has no name
+                new_self.name = "__reduced__"
         return new_self, new_other
 
     def __add__(self, right):

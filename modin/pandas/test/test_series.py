@@ -169,6 +169,8 @@ def create_test_series(vals):
     elif isinstance(vals, list):
         modin_series = pd.Series(vals)
         pandas_series = pandas.Series(vals)
+    modin_series.name = "series_name"
+    pandas_series.name = modin_series.name
     return modin_series, pandas_series
 
 
