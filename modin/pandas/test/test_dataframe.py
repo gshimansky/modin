@@ -87,6 +87,16 @@ class TestDataFrameBinary:
             modin_result = getattr(modin_df, op)(4)
             df_equals(modin_result, pandas_result)
 
+        # Test dataframe to string
+        try:
+            pandas_result = getattr(pandas_df, op)("4")
+        except Exception as e:
+            with pytest.raises(type(e)):
+                getattr(modin_df, op)("4")
+        else:
+            modin_result = getattr(modin_df, op)("4")
+            df_equals(modin_result, pandas_result)
+
         # Test dataframe to float
         try:
             pandas_result = getattr(pandas_df, op)(4.0)
