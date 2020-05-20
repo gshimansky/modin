@@ -63,11 +63,12 @@ test_data = {
         ]
         for i in range(NCOLS)
     },
-    "with_index_column": {
-        "index": [1, 2, 3, 4],
-        "col4": [4, 5, 6, 7],
-        "col1": [8.0, 9.4, 10.1, 11.3],
-        "col2": ["a", "b", "c", "d"],
+    "mixed_numeric_types": {
+        "col0": [1, 2, 3, 4, 5, 6],
+        "col1": [4, 5, 6, 7, 8, 9],
+        "col2": [8.0, 9.4, 10.1, 11.3, 12.4, 13.5],
+        "col3": [11, 22, np.NaN, np.NaN, 44, 55],
+        "col4": [8.0, 9.4, 10.1, 11.3, 12.4, 13.5],
     },
     # "int_float_object_data": {
     #     "col3": [1, 2, 3, 4],
@@ -161,7 +162,7 @@ numeric_dfs = [
     "float_data",
     "sparse_nan_data",
     "dense_nan_data",
-    "with_index_column",
+    "mixed_numeric_types",
     "100x100",
 ]
 

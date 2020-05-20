@@ -763,8 +763,6 @@ class BasePandasDataset(object):
             The cumulative maximum of the DataFrame.
         """
         axis = self._get_axis_number(axis) if axis is not None else 0
-        if axis:
-            self._validate_dtypes()
         return self.__constructor__(
             query_compiler=self._query_compiler.cummax(
                 axis=axis, skipna=skipna, **kwargs
@@ -782,8 +780,6 @@ class BasePandasDataset(object):
             The cumulative minimum of the DataFrame.
         """
         axis = self._get_axis_number(axis) if axis is not None else 0
-        if axis:
-            self._validate_dtypes()
         return self.__constructor__(
             query_compiler=self._query_compiler.cummin(
                 axis=axis, skipna=skipna, **kwargs
@@ -1938,12 +1934,12 @@ class BasePandasDataset(object):
                 for i in range(1, len(self._get_dtypes())):
                     pre_dtype = self._get_dtypes()[i - 1]
                     curr_dtype = self._get_dtypes()[i]
-                    if not is_dtype_equal(pre_dtype, curr_dtype):
-                        raise TypeError(
-                            "Cannot compare type '{0}' with type '{1}'".format(
-                                pre_dtype, curr_dtype
-                            )
-                        )
+#                    if not is_dtype_equal(pre_dtype, curr_dtype):
+#                        raise TypeError(
+#                            "Cannot compare type '{0}' with type '{1}'".format(
+#                                pre_dtype, curr_dtype
+#                            )
+#                        )
         else:
             # Normally pandas returns this near the end of the quantile, but we
             # can't afford the overhead of running the entire operation before
