@@ -282,7 +282,7 @@ def test_simple_row_groupby(by, as_index):
 
     # Workaround for Pandas bug #34656. Recreate groupby object for Pandas
     pandas_groupby = pandas_df.groupby(by=by, as_index=as_index)
-    apply_functions = [lambda df: df.sum(), min]
+    apply_functions = [lambda df: 111.11, lambda df: df.sum(), min]
     for func in apply_functions:
         eval_apply(modin_groupby, pandas_groupby, func)
 
