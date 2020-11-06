@@ -2577,18 +2577,14 @@ class PandasQueryCompiler(BaseQueryCompiler):
             agg_func = wrap_udf_function(agg_func)
 
         if is_multi_by:
-            return super().groupby_agg(
-                by=by,
-                is_multi_by=is_multi_by,
-                axis=axis,
-                agg_func=agg_func,
-                agg_args=agg_args,
-                agg_kwargs=agg_kwargs,
-                groupby_kwargs=groupby_kwargs,
-                drop=drop,
-            )
-
-        by = by.to_pandas().squeeze() if isinstance(by, type(self)) else by
+            if isinstance(by, type(self)) and len(by.columns) == 1:
+                by = by.columns[0] if drop else by.to_pandas().squeeze()
+            elif isinstance(by, type(self)):
+                by = list(by.columns)
+            else:
+                by = try_cast_to_pandas(by)
+        else:
+            by = by.to_pandas().squeeze() if isinstance(by, type(self)) else by
 
         # since we're going to modify `groupby_kwargs` dict in a `groupby_agg_builder`,
         # we want to copy it to not propagate these changes into source dict, in case
@@ -2601,7 +2597,8 @@ class PandasQueryCompiler(BaseQueryCompiler):
             # Set `as_index` to True to track the metadata of the grouping object
             # It is used to make sure that between phases we are constructing the
             # right index and placing columns in the correct order.
-            groupby_kwargs["as_index"] = True
+            if not is_multi_by:
+                groupby_kwargs["as_index"] = True
 
             def compute_groupby(df):
                 grouped_df = df.groupby(by=by, axis=axis, **groupby_kwargs)
@@ -2647,12 +2644,16 @@ class PandasQueryCompiler(BaseQueryCompiler):
 
         # Reset `as_index` because it was edited inplace.
         groupby_kwargs["as_index"] = as_index
-        if as_index:
+
+        if is_multi_by:
             return result
         else:
-            if result.index.name is None or result.index.name in result.columns:
-                drop = False
-            return result.reset_index(drop=not drop)
+            if as_index:
+                return result
+            else:
+                if result.index.name is None or result.index.name in result.columns:
+                    drop = False
+                return result.reset_index(drop=not drop)
 
     # END Manual Partitioning methods
 
