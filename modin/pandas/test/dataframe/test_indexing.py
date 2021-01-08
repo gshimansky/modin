@@ -398,6 +398,41 @@ def test_loc_multi_index():
     df_equals(modin_df.loc[modin_df.index], pandas_df.loc[pandas_df.index])
     df_equals(modin_df.loc[modin_df.index[:7]], pandas_df.loc[pandas_df.index[:7]])
 
+    # From issue #2575
+    eval_general(modin_df, pandas_df, lambda df: df.loc[("bar"), "one", :])
+    eval_general(modin_df, pandas_df, lambda df: df.loc[("bar", "one")])
+    eval_general(modin_df, pandas_df, lambda df: df.loc[[("bar", "one")]])
+    eval_general(modin_df, pandas_df, lambda df: df.loc[("bar", "one"):])
+    eval_general(modin_df, pandas_df, lambda df: df.loc[("bar"), "one"])
+    eval_general(
+        modin_df,
+        pandas_df,
+        lambda df: df.loc[
+            ("bar"),
+            ("one"),
+        ],
+    )
+    eval_general(
+        modin_df,
+        pandas_df,
+        lambda df: df.loc[
+            ("bar", "one"),
+        ],
+    )
+    eval_general(modin_df, pandas_df, lambda df: df.loc[("bar", "one"):"foo"])
+    eval_general(modin_df, pandas_df, lambda df: df.loc["bar", slice(None), :])
+    eval_general(modin_df, pandas_df, lambda df: df.loc[slice(None), "one", :])
+    eval_general(
+        modin_df.sort_index(),
+        pandas_df.sort_index(),
+        lambda df: df.loc[("bar", "one"):"foo"],
+    )
+    eval_general(
+        modin_df.sort_index(),
+        pandas_df.sort_index(),
+        lambda df: df.loc[("bar", "three"):("foo", "one")],
+    )
+
 
 @pytest.mark.parametrize("index", [["row1", "row2", "row3"]])
 @pytest.mark.parametrize("columns", [["col1", "col2"]])
