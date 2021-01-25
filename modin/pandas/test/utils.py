@@ -1071,3 +1071,9 @@ def dummy_decorator():
         return wrapped_function
 
     return wrapper
+
+
+def rotate_decimal_digits(number):
+    tens = number / 10
+    ones = number % 10
+    return tens + ones * 10
