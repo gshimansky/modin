@@ -2869,9 +2869,8 @@ class PandasQueryCompiler(BaseQueryCompiler):
         PandasQueryCompiler
             A new query compiler that contains result of the sort
         """
-        na_position = kwargs.get("na_position", "last")
-        kind = kwargs.get("kind", "quicksort")
         ignore_index = kwargs.get("ignore_index", False)
+        kwargs["ignore_index"] = False
         if not is_list_like(columns):
             columns = [columns]
         # Currently, sort_values will just reindex based on the sorted values.
@@ -2892,28 +2891,20 @@ class PandasQueryCompiler(BaseQueryCompiler):
         broadcast_values2 = broadcast_values2.reset_index(drop=True)
         # Index may contain duplicates
         new_index1 = broadcast_values1.sort_values(
-            by=columns,
-            axis=0,
-            ascending=ascending,
-            kind=kind,
-            na_position=na_position,
+            by=columns, axis=0, ascending=ascending, **kwargs
         ).index
         # Index without duplicates
         new_index2 = broadcast_values2.sort_values(
-            by=columns,
-            axis=0,
-            ascending=ascending,
-            kind=kind,
-            na_position=na_position,
+            by=columns, axis=0, ascending=ascending, **kwargs
         ).index
 
         result = self.reset_index(drop=True).reindex(axis=0, labels=new_index2)
         if ignore_index:
-            return result.reset_index(drop=True, inplace=True)
+            result = result.reset_index(drop=True)
         else:
             result.index = new_index1
             result.index.names = orig_index_level_names
-            return result
+        return result
 
     def sort_columns_by_row_values(self, rows, ascending=True, **kwargs):
         """Reorder the columns based on the lexicographic order of the given rows.
@@ -2930,8 +2921,6 @@ class PandasQueryCompiler(BaseQueryCompiler):
         PandasQueryCompiler
             A new query compiler that contains result of the sort
         """
-        na_position = kwargs.get("na_position", "last")
-        kind = kwargs.get("kind", "quicksort")
         if not is_list_like(rows):
             rows = [rows]
         ErrorMessage.default_to_pandas("sort_values")
@@ -2944,11 +2933,7 @@ class PandasQueryCompiler(BaseQueryCompiler):
         )
         broadcast_values.columns = self.columns
         new_columns = broadcast_values.sort_values(
-            by=rows,
-            axis=1,
-            ascending=ascending,
-            kind=kind,
-            na_position=na_position,
+            by=rows, axis=1, ascending=ascending, **kwargs
         ).columns
         return self.reindex(axis=1, labels=new_columns)
 
